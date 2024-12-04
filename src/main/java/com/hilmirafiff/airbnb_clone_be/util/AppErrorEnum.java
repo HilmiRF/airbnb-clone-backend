@@ -22,6 +22,7 @@ public enum AppErrorEnum {
     INTERNAL_SERVER_ERROR("ABN-500", "Maaf, sepertinya ada kesalahan pada server kami", "Sorry, there seems to be an error in our server"),
     MANDATORY_FIELD_MISSING("ABN-400", "Field mandatory belum terisi : {0}", "Mandatory field missing : {0}"),
     RESOURCE_NOT_FOUND("DITA-404", "{0} tidak ditemukan", "{0} not found"),
+    ALREADY_EXISTS("DITA-403", "{0} sudah terdaftar", "{0} already exists"),
 
     // Unauthorized
     WRONG_USERNAME_OR_PASSWORD("ABN-401", "Kredensial ini tidak cocok dengan catatan kami", "Sorry, these credentials do not match our records"),

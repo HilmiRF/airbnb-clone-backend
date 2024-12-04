@@ -12,6 +12,4 @@ public interface UserService extends UserDetailsService {
     User getUserByUsername(String username);
 
     User save(SignUpRequestDto signUpRequestDto);
-
-    User getUserByEmail(String email);
 }

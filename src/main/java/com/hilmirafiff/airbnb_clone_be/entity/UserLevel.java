@@ -55,7 +55,7 @@ public class UserLevel {
 
     @Builder.Default
     @ToString.Exclude
-    @JsonManagedReference
+    @JsonManagedReference("user-userLevel")
     @OneToMany(mappedBy = "userLevel", targetEntity = User.class)
     private Set<User> users = new LinkedHashSet<>();
 }

@@ -8,10 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum AppMessageEnum {
 
     USER("Pengguna", "User"),
-    EXERCISE("Latihan","Exercise"),
-    TEMPLATE("Contoh","Template"),
-    MAP("Pemetaan", "Mapping"),
-    USER_LEVEL("User level", "User level");
+    USER_LEVEL("User level", "User level"),
+    PROPERTY("Properti", "Property");
 
     private final String messageInd;
     private final String messageEn;

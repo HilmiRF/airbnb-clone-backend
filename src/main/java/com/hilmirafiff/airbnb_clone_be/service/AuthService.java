@@ -13,7 +13,7 @@ public interface AuthService {
 
     OutputSchemaDataResponseDto<SignUpResponseDto> signUp(SignUpRequestDto signUpRequestDto) throws Exception;
 
-    User getEmailFromToken(String token);
+    User getUserFromToken(String token);
 
     OutputSchemaResponseDto logoff(User user);
 

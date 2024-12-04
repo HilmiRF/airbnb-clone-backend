@@ -6,6 +6,7 @@ import com.hilmirafiff.airbnb_clone_be.entity.UserLevel;
 import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import com.hilmirafiff.airbnb_clone_be.repository.UserLevelRepository;
 import com.hilmirafiff.airbnb_clone_be.repository.UserRepository;
+import com.hilmirafiff.airbnb_clone_be.security.JwtTokenProvider;
 import com.hilmirafiff.airbnb_clone_be.service.UserLevelService;
 import com.hilmirafiff.airbnb_clone_be.service.UserService;
 import com.hilmirafiff.airbnb_clone_be.util.AppErrorEnum;
@@ -23,24 +24,17 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-//    private final UserLevelRepository userLevelRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public UserServiceImpl(UserRepository userRepository
-//                           UserLevelRepository userLevelRepository
+    public UserServiceImpl(UserRepository userRepository, JwtTokenProvider jwtTokenProvider
     ) {
         super();
         this.userRepository = userRepository;
-//        this.userLevelRepository = userLevelRepository;
-    }
-
-    @Override
-    public User getUserByUsername(String username){
-        return userRepository.findByUsername(username);
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public User save(SignUpRequestDto signUpRequestDto){
-        // UserLevel userLevel = userLevelRepository.findById(signUpRequestDto.getUserLevel()).orElseThrow(() -> new ApplicationException(AppErrorEnum.INTERNAL_SERVER_ERROR));
         User user = new User();
         user.setUserId(UUID.randomUUID());
         user.setEmail(signUpRequestDto.getEmail());
@@ -52,8 +46,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email) {
-        return null;
+    public User getUserByUsername(String username) {
+        return this.userRepository.findByUsername(username);
     }
 
     @Override

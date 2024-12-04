@@ -1,14 +1,14 @@
 package com.hilmirafiff.airbnb_clone_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -21,35 +21,23 @@ import java.util.UUID;
 public class Property {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
     private UUID id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private Double price;
-
-    @Column(nullable = false)
-    private String localization;
-
-    @Column(columnDefinition = "TEXT")
+    private String title;
     private String description;
+    private Double pricePerNight;
+    private String location;
 
-    @Column(nullable = false)
-    private String host;
+    @JsonBackReference("user-property")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_HOST_ID")
+    private User hostId;
 
-    private Double latitude;
-
-    private Double longitude;
-
-    private Double rating;
-
-    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Builder.Default
+    @ToString.Exclude
+    @JsonManagedReference("property-review")
+    @OneToMany(mappedBy = "propertyId", targetEntity = Review.class)
+    private Set<Review> reviews = new LinkedHashSet<>();
 }
 

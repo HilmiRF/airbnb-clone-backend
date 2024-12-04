@@ -27,7 +27,7 @@ public class JwtTokenProvider {
     private SecretKey key() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
-    public String getUserEmail(String token) {
+    public String getUsername(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(key())
                 .build()
@@ -37,11 +37,11 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(User user) {
-        String email = user.getEmail();
+        String username = user.getUsername();
         Date currentDate = new Date();
         Date expiredDate = new Date(currentDate.getTime() + this.jwtExpirationTime);
         return Jwts.builder()
-                .subject(email)
+                .subject(username)
                 .issuedAt(currentDate)
                 .expiration(expiredDate)
                 .signWith(key())

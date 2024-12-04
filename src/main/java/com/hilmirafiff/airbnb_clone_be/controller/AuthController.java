@@ -64,7 +64,7 @@ public class AuthController {
     @PostMapping("/logoff")
     public ResponseEntity<GlobalResponseDto<OutputSchemaResponseDto>> logoff (@RequestHeader HttpHeaders requestHeaders){
         String token = Objects.requireNonNull(requestHeaders.getFirst(HttpHeaders.AUTHORIZATION)).split(" ")[1];
-        User user = this.authService.getEmailFromToken(token);
+        User user = this.authService.getUserFromToken(token);
         return new ResponseEntity<>(messageUtils.successDto(authService.logoff(user), AppErrorEnum.LOGOFF_SUCCESS), HttpStatus.OK);
     }
 }

@@ -1,5 +1,6 @@
 package com.hilmirafiff.airbnb_clone_be.security;
 
+import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,15 +32,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String token = getTokenFromRequest(request);
             if (!request.getRequestURL().toString().contains("auth") && StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
-                String email = jwtTokenProvider.getUserEmail(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                String username = jwtTokenProvider.getUsername(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
+            String msg = ex.getMessage();
             resolver.resolveException(request, response, null, ex);
+            throw new RuntimeException(ex);
         }
     }
 

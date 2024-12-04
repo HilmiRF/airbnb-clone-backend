@@ -1,7 +1,5 @@
 package com.hilmirafiff.airbnb_clone_be.service.impl;
 
-import com.hilmirafiff.airbnb_clone_be.configuration.LoggingAspect;
-import com.hilmirafiff.airbnb_clone_be.dto.GlobalResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.OutputSchemaDataResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.auth.LoginRequestDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.auth.SignUpRequestDto;
@@ -9,7 +7,6 @@ import com.hilmirafiff.airbnb_clone_be.dto.response.auth.LoginResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.auth.SignUpResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.session.UserLoginResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
-import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import com.hilmirafiff.airbnb_clone_be.repository.UserRepository;
 import com.hilmirafiff.airbnb_clone_be.security.JwtTokenProvider;
 import com.hilmirafiff.airbnb_clone_be.service.AuthService;
@@ -17,11 +14,11 @@ import com.hilmirafiff.airbnb_clone_be.service.UserService;
 import com.hilmirafiff.airbnb_clone_be.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -106,9 +103,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public User getEmailFromToken(String token) {
-        String email = this.jwtTokenProvider.getUserEmail(token);
-        return userService.getUserByEmail(email);
+    public User getUserFromToken(String token) {
+        String username = this.jwtTokenProvider.getUsername(token);
+        return userService.getUserByUsername(username);
     }
 
     @Override
