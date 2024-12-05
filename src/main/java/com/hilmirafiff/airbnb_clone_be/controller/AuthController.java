@@ -6,12 +6,10 @@ import com.hilmirafiff.airbnb_clone_be.dto.request.auth.LoginRequestDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.auth.SignUpRequestDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.auth.LoginResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.auth.SignUpResponseDto;
+import com.hilmirafiff.airbnb_clone_be.dto.response.property.PropertyResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
 import com.hilmirafiff.airbnb_clone_be.service.AuthService;
-import com.hilmirafiff.airbnb_clone_be.util.AppConstant;
-import com.hilmirafiff.airbnb_clone_be.util.AppErrorEnum;
-import com.hilmirafiff.airbnb_clone_be.util.MessageUtils;
-import com.hilmirafiff.airbnb_clone_be.util.OutputSchemaResponseDto;
+import com.hilmirafiff.airbnb_clone_be.util.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -55,8 +53,8 @@ public class AuthController {
             GlobalResponseDto<OutputSchemaDataResponseDto<SignUpResponseDto>> responseDto = messageUtils.successDto(response, AppErrorEnum.CREATED);
             return new ResponseEntity<>(responseDto, HttpStatus.OK);
         } else {
-            GlobalResponseDto<OutputSchemaDataResponseDto<SignUpResponseDto>> responseDto = messageUtils.successDto(response, AppErrorEnum.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(responseDto, HttpStatus.INTERNAL_SERVER_ERROR);
+            GlobalResponseDto<OutputSchemaDataResponseDto<SignUpResponseDto>> responseDto = messageUtils.alreadyExistDto(response, AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.USER, signUpRequestDto.getUsername());
+            return new ResponseEntity<>(responseDto, HttpStatus.FORBIDDEN);
         }
     }
 

@@ -6,6 +6,7 @@ import com.hilmirafiff.airbnb_clone_be.dto.request.property.CreatePropertyReques
 import com.hilmirafiff.airbnb_clone_be.dto.response.property.PropertyResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
 import com.hilmirafiff.airbnb_clone_be.service.AuthService;
+import com.hilmirafiff.airbnb_clone_be.util.AppMessageEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -50,8 +51,8 @@ public class PropertyController {
             GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> responseDto = messageUtils.successDto(response, AppErrorEnum.CREATED);
             return new ResponseEntity<>(responseDto, HttpStatus.OK);
         } else {
-            GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> responseDto = messageUtils.successDto(response, AppErrorEnum.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(responseDto, HttpStatus.INTERNAL_SERVER_ERROR);
+            GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> responseDto = messageUtils.alreadyExistDto(response, AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.PROPERTY, createPropertyRequestDto.getTitle());
+            return new ResponseEntity<>(responseDto, HttpStatus.FORBIDDEN);
         }
     }
 

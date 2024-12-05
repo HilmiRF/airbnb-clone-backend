@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hilmirafiff.airbnb_clone_be.dto.OutputSchemaDataResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.property.CreatePropertyRequestDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.property.PropertyRequestDto;
+import com.hilmirafiff.airbnb_clone_be.dto.response.auth.SignUpResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.property.PropertyResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.Property;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
@@ -19,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -60,7 +62,11 @@ public class PropertyServiceImpl implements PropertyService {
                     .data(mapToCreatePropertyResponseDto(property))
                     .build();
         } else {
-            throw new ApplicationWithParamException(AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.PROPERTY.getMessageEn(), null);
+            return OutputSchemaDataResponseDto.<PropertyResponseDto>builder()
+                    .status(AppConstant.Status.ERROR)
+                    .reason(MessageFormat.format(AppMessageEnum.PROPERTY.getMessageEn()+ " " + AppErrorEnum.ALREADY_EXISTS.getAppErrorMessageEn(), createPropertyRequestDto.getTitle()))
+                    .data(null)
+                    .build();
         }
     }
     private PropertyResponseDto mapToCreatePropertyResponseDto(Property property){

@@ -5,6 +5,9 @@ import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import com.hilmirafiff.airbnb_clone_be.exception.ApplicationWithParamException;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
+import java.util.Objects;
+
 @Component
 public class MessageUtils {
 
@@ -14,6 +17,16 @@ public class MessageUtils {
                 .errorMessage(GlobalResponseDto.ErrorMessage.builder()
                         .indonesian(appErrorEnum.getAppErrorMessageInd())
                         .english(appErrorEnum.getAppErrorMessageEn())
+                        .build())
+                .build(), data);
+    }
+
+    public <T> GlobalResponseDto<T> alreadyExistDto(T data, AppErrorEnum appErrorEnum, AppMessageEnum appMessageEnum, String argument) {
+        return new GlobalResponseDto<>(GlobalResponseDto.ErrorSchema.builder()
+                .errorCode(appErrorEnum.getAppErrorCode())
+                .errorMessage(GlobalResponseDto.ErrorMessage.builder()
+                        .indonesian(MessageFormat.format(AppMessageEnum.PROPERTY.getMessageInd()+ " " + AppErrorEnum.ALREADY_EXISTS.getAppErrorMessageInd(), argument))
+                        .english(MessageFormat.format(AppMessageEnum.PROPERTY.getMessageEn()+ " " + AppErrorEnum.ALREADY_EXISTS.getAppErrorMessageEn(), argument))
                         .build())
                 .build(), data);
     }

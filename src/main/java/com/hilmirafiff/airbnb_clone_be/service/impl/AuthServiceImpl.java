@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -82,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
         if(checkUser != null){
             return OutputSchemaDataResponseDto.<SignUpResponseDto>builder()
                     .status(AppConstant.Status.ERROR)
-                    .reason("Sign Up Failed, User already exist")
+                    .reason(MessageFormat.format(AppMessageEnum.USER.getMessageEn()+ " " + AppErrorEnum.ALREADY_EXISTS.getAppErrorMessageEn(), signUpRequestDto.getUsername()))
                     .data(null)
                     .build();
         }
