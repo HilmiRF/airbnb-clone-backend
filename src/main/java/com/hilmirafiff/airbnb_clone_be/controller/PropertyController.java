@@ -46,14 +46,8 @@ public class PropertyController {
         log.info("MASUK SINI");
         String token = Objects.requireNonNull(requestHeaders.getFirst(HttpHeaders.AUTHORIZATION)).split(" ")[1];
         User user = this.authService.getUserFromToken(token);
-        OutputSchemaDataResponseDto<PropertyResponseDto> response = propertyService.createProperty(user, createPropertyRequestDto);
-        if (Objects.equals(response.getStatus(), AppConstant.Status.SUCCESS)){
-            GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> responseDto = messageUtils.successDto(response, AppErrorEnum.CREATED);
-            return new ResponseEntity<>(responseDto, HttpStatus.OK);
-        } else {
-            GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> responseDto = messageUtils.alreadyExistDto(response, AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.PROPERTY, createPropertyRequestDto.getTitle());
-            return new ResponseEntity<>(responseDto, HttpStatus.FORBIDDEN);
-        }
+        GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> response = messageUtils.successDto(propertyService.createProperty(user, createPropertyRequestDto), AppErrorEnum.CREATED);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @Operation(summary = "test property")

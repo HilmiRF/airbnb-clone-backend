@@ -62,11 +62,7 @@ public class PropertyServiceImpl implements PropertyService {
                     .data(mapToCreatePropertyResponseDto(property))
                     .build();
         } else {
-            return OutputSchemaDataResponseDto.<PropertyResponseDto>builder()
-                    .status(AppConstant.Status.ERROR)
-                    .reason(MessageFormat.format(AppMessageEnum.PROPERTY.getMessageEn()+ " " + AppErrorEnum.ALREADY_EXISTS.getAppErrorMessageEn(), createPropertyRequestDto.getTitle()))
-                    .data(null)
-                    .build();
+            throw new ApplicationWithParamException(AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.PROPERTY.getMessageEn(), null);
         }
     }
     private PropertyResponseDto mapToCreatePropertyResponseDto(Property property){

@@ -7,6 +7,8 @@ import com.hilmirafiff.airbnb_clone_be.dto.response.auth.LoginResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.auth.SignUpResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.session.UserLoginResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
+import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
+import com.hilmirafiff.airbnb_clone_be.exception.ApplicationWithParamException;
 import com.hilmirafiff.airbnb_clone_be.repository.UserRepository;
 import com.hilmirafiff.airbnb_clone_be.security.JwtTokenProvider;
 import com.hilmirafiff.airbnb_clone_be.service.AuthService;
@@ -67,11 +69,7 @@ public class AuthServiceImpl implements AuthService {
                     .data(mapToLoginResponseDto(token, jwtExpirationTime / 1000, mapToUserLoginResponseDto(user)))
                     .build();
         } else {
-            return OutputSchemaDataResponseDto.<LoginResponseDto>builder()
-                    .status(AppConstant.Status.ERROR)
-                    .reason("Login Failed")
-                    .data(null)
-                    .build();
+            throw new ApplicationException(AppErrorEnum.WRONG_USERNAME_OR_PASSWORD);
         }
     }
 
@@ -81,11 +79,7 @@ public class AuthServiceImpl implements AuthService {
         final User checkUser = userRepository.findByUsername(username);
 
         if(checkUser != null){
-            return OutputSchemaDataResponseDto.<SignUpResponseDto>builder()
-                    .status(AppConstant.Status.ERROR)
-                    .reason(MessageFormat.format(AppMessageEnum.USER.getMessageEn()+ " " + AppErrorEnum.ALREADY_EXISTS.getAppErrorMessageEn(), signUpRequestDto.getUsername()))
-                    .data(null)
-                    .build();
+            throw new ApplicationWithParamException(AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.USER.getMessageEn(), null);
         }
 
         final String strToEncrypt = signUpRequestDto.getPassword();

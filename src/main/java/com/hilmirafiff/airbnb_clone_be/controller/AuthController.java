@@ -35,27 +35,15 @@ public class AuthController {
     @Operation(summary = "Login")
     @PostMapping("/login")
     public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<LoginResponseDto>>> login(@Valid @RequestBody LoginRequestDto loginRequestDto) throws Exception {
-        OutputSchemaDataResponseDto<LoginResponseDto> response = authService.login(loginRequestDto);
-        if (Objects.equals(response.getStatus(), AppConstant.Status.SUCCESS)){
-            GlobalResponseDto<OutputSchemaDataResponseDto<LoginResponseDto>> responseDto = messageUtils.successDto(response, AppErrorEnum.OK);
-            return new ResponseEntity<>(responseDto, HttpStatus.OK);
-        } else {
-            GlobalResponseDto<OutputSchemaDataResponseDto<LoginResponseDto>> responseDto = messageUtils.successDto(response, AppErrorEnum.WRONG_USERNAME_OR_PASSWORD);
-            return new ResponseEntity<>(responseDto, HttpStatus.UNAUTHORIZED);
-        }
+        GlobalResponseDto<OutputSchemaDataResponseDto<LoginResponseDto>> response = messageUtils.successDto(authService.login(loginRequestDto),AppErrorEnum.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "Register")
     @PostMapping("/register")
     public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<SignUpResponseDto>>> signUp(@Valid @RequestBody SignUpRequestDto signUpRequestDto) throws Exception {
-        OutputSchemaDataResponseDto<SignUpResponseDto> response = authService.signUp(signUpRequestDto);
-        if (Objects.equals(response.getStatus(), AppConstant.Status.SUCCESS)){
-            GlobalResponseDto<OutputSchemaDataResponseDto<SignUpResponseDto>> responseDto = messageUtils.successDto(response, AppErrorEnum.CREATED);
-            return new ResponseEntity<>(responseDto, HttpStatus.OK);
-        } else {
-            GlobalResponseDto<OutputSchemaDataResponseDto<SignUpResponseDto>> responseDto = messageUtils.alreadyExistDto(response, AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.USER, signUpRequestDto.getUsername());
-            return new ResponseEntity<>(responseDto, HttpStatus.FORBIDDEN);
-        }
+        GlobalResponseDto<OutputSchemaDataResponseDto<SignUpResponseDto>> response = messageUtils.successDto(authService.signUp(signUpRequestDto),AppErrorEnum.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "Logoff")
