@@ -1,6 +1,5 @@
 package com.hilmirafiff.airbnb_clone_be.security;
 
-import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,9 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
-            String msg = ex.getMessage();
             resolver.resolveException(request, response, null, ex);
-            throw new RuntimeException(ex);
         }
     }
 

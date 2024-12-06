@@ -35,8 +35,8 @@ public class MessageUtils {
         return new GlobalResponseDto<>(GlobalResponseDto.ErrorSchema.builder()
                 .errorCode(appErrorEnum.getAppErrorCode())
                 .errorMessage(GlobalResponseDto.ErrorMessage.builder()
-                        .indonesian(appMessageEnum.getMessageInd() +  appErrorEnum.getAppErrorMessageInd())
-                        .english(appMessageEnum.getMessageEn() + appErrorEnum.getAppErrorMessageEn())
+                        .indonesian(appMessageEnum.getMessageInd() + " " +appErrorEnum.getAppErrorMessageInd())
+                        .english(appMessageEnum.getMessageEn() + " " +appErrorEnum.getAppErrorMessageEn())
                         .build())
                 .build(), data);
     }

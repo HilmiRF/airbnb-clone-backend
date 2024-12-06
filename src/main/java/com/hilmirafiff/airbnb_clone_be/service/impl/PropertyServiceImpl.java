@@ -8,6 +8,7 @@ import com.hilmirafiff.airbnb_clone_be.dto.response.auth.SignUpResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.property.PropertyResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.Property;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
+import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import com.hilmirafiff.airbnb_clone_be.exception.ApplicationWithParamException;
 import com.hilmirafiff.airbnb_clone_be.repository.PropertyRepository;
 import com.hilmirafiff.airbnb_clone_be.service.PropertyService;
@@ -34,13 +35,30 @@ public class PropertyServiceImpl implements PropertyService {
         this.propertyRepository = propertyRepository;
     }
     @Override
-    public OutputSchemaDataResponseDto<PropertyResponseDto> getAllProperties() throws Exception {
-        return null;
+    public OutputSchemaDataResponseDto<List<PropertyResponseDto>> getAllProperties() throws Exception {
+        List<Property> listMenu= this.propertyRepository.findAll();
+        return OutputSchemaDataResponseDto.<List<PropertyResponseDto>>builder()
+                .status(AppConstant.Status.SUCCESS)
+                .reason(AppMessageEnum.PROPERTY.getMessageEn() + " " + AppErrorEnum.FETCHED.getAppErrorMessageEn())
+                .data(listMenu.stream()
+                        .map(this::mapToPropertyResponseDto)
+                        .toList())
+                .build();
     }
 
     @Override
-    public OutputSchemaDataResponseDto<PropertyResponseDto> getPropertyById(PropertyRequestDto propertyRequestDto) throws Exception {
-        return null;
+    public OutputSchemaDataResponseDto<PropertyResponseDto> getPropertyById(UUID propertyId) throws Exception {
+        try{
+            Property property = this.propertyRepository.findById(propertyId).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "property", null));
+            return OutputSchemaDataResponseDto.<PropertyResponseDto>builder()
+                    .status(AppConstant.Status.SUCCESS)
+                    .reason(AppMessageEnum.PROPERTY.getMessageEn() + AppErrorEnum.FETCHED.getAppErrorMessageEn())
+                    .data(mapToPropertyResponseDto(property))
+                    .build();
+        } catch (Exception ex){
+            throw new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, propertyId.toString(), null);
+        }
+
     }
 
     @Override
@@ -59,13 +77,13 @@ public class PropertyServiceImpl implements PropertyService {
             return OutputSchemaDataResponseDto.<PropertyResponseDto>builder()
                     .status(AppConstant.Status.SUCCESS)
                     .reason(AppMessageEnum.PROPERTY.getMessageEn() + " "+ AppErrorEnum.CREATED.getAppErrorMessageEn())
-                    .data(mapToCreatePropertyResponseDto(property))
+                    .data(mapToPropertyResponseDto(property))
                     .build();
         } else {
             throw new ApplicationWithParamException(AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.PROPERTY.getMessageEn(), null);
         }
     }
-    private PropertyResponseDto mapToCreatePropertyResponseDto(Property property){
+    private PropertyResponseDto mapToPropertyResponseDto(Property property){
         return PropertyResponseDto.builder()
                 .id(property.getId())
                 .title(property.getTitle())

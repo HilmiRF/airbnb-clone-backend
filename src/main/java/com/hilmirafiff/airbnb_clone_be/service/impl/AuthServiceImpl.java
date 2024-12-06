@@ -69,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
                     .data(mapToLoginResponseDto(token, jwtExpirationTime / 1000, mapToUserLoginResponseDto(user)))
                     .build();
         } else {
-            throw new ApplicationException(AppErrorEnum.WRONG_USERNAME_OR_PASSWORD);
+            throw new ApplicationWithParamException(AppErrorEnum.WRONG_USERNAME_OR_PASSWORD, AppMessageEnum.USER.getMessageEn(), null);
         }
     }
 

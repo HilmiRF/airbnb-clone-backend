@@ -20,7 +20,10 @@ import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("property")
@@ -50,13 +53,20 @@ public class PropertyController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @Operation(summary = "test property")
-    @GetMapping
-    public String test(){
-        return "hello world";
-    }
-
     // TO DO
     // Get all properties
+    @Operation(summary = "Get all Property")
+    @GetMapping
+    public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<List<PropertyResponseDto>>>>getAllProperties() throws Exception {
+        GlobalResponseDto<OutputSchemaDataResponseDto<List<PropertyResponseDto>>> responseDto = messageUtils.successWithParamDto(propertyService.getAllProperties(), AppErrorEnum.FETCHED, AppMessageEnum.PROPERTY);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
     // Get property by id
+    @Operation(summary = "Get Property By Id")
+    @GetMapping("{property-id}")
+    public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>>> getPropertyById(@PathVariable(value = "property-id") UUID propertyId) throws Exception {
+        GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> responseDto = messageUtils.successWithParamDto(propertyService.getPropertyById(propertyId),AppErrorEnum.FETCHED, AppMessageEnum.PROPERTY);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }
