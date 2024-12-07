@@ -1,27 +1,20 @@
 package com.hilmirafiff.airbnb_clone_be.service.impl;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hilmirafiff.airbnb_clone_be.dto.OutputSchemaDataResponseDto;
-import com.hilmirafiff.airbnb_clone_be.dto.request.property.CreatePropertyRequestDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.property.PropertyRequestDto;
-import com.hilmirafiff.airbnb_clone_be.dto.response.auth.SignUpResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.property.PropertyResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.Property;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
-import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import com.hilmirafiff.airbnb_clone_be.exception.ApplicationWithParamException;
 import com.hilmirafiff.airbnb_clone_be.repository.PropertyRepository;
 import com.hilmirafiff.airbnb_clone_be.service.PropertyService;
 import com.hilmirafiff.airbnb_clone_be.util.AppConstant;
 import com.hilmirafiff.airbnb_clone_be.util.AppErrorEnum;
 import com.hilmirafiff.airbnb_clone_be.util.AppMessageEnum;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.hilmirafiff.airbnb_clone_be.util.OutputSchemaResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -56,22 +49,58 @@ public class PropertyServiceImpl implements PropertyService {
                     .data(mapToPropertyResponseDto(property))
                     .build();
         } catch (Exception ex){
-            throw new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, propertyId.toString(), null);
+            throw new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "property", null);
         }
 
     }
 
     @Override
-    public OutputSchemaDataResponseDto<PropertyResponseDto> createProperty(User user, CreatePropertyRequestDto createPropertyRequestDto) throws Exception {
-        boolean isPropertyAlreadyExist = this.propertyRepository.existsByTitleIgnoreCase(createPropertyRequestDto.getTitle());
+    public OutputSchemaDataResponseDto<PropertyResponseDto> updatePropertyById(UUID propertyId, PropertyRequestDto propertyRequestDto) throws Exception {
+        try{
+            Property property = this.propertyRepository.findById(propertyId).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "property", null));
+            property.setTitle(propertyRequestDto.getTitle());
+            property.setDescription(propertyRequestDto.getDescription());
+            property.setPricePerNight(propertyRequestDto.getPricePerNight());
+            property.setLocation(propertyRequestDto.getLocation());
+
+            this.propertyRepository.save(property);
+
+            return OutputSchemaDataResponseDto.<PropertyResponseDto>builder()
+                    .status(AppConstant.Status.SUCCESS)
+                    .reason(AppMessageEnum.PROPERTY.getMessageEn() + AppErrorEnum.UPDATED.getAppErrorMessageEn())
+                    .data(mapToPropertyResponseDto(property))
+                    .build();
+        } catch (Exception ex){
+            throw new ApplicationWithParamException(AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.PROPERTY.getMessageEn(), null);
+        }
+    }
+
+    @Override
+    public OutputSchemaResponseDto deletePropertyById(UUID propertyId) throws Exception {
+        try{
+            Property property = this.propertyRepository.findById(propertyId).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "property", null));
+            this.propertyRepository.deleteById(propertyId);
+
+            return OutputSchemaResponseDto.builder()
+                    .status(AppConstant.Status.SUCCESS)
+                    .reason(AppMessageEnum.PROPERTY.getMessageEn()+" "+AppErrorEnum.DELETED)
+                    .build();
+        } catch (Exception ex){
+            throw new ApplicationWithParamException(AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.PROPERTY.getMessageEn(), null);
+        }
+    }
+
+    @Override
+    public OutputSchemaDataResponseDto<PropertyResponseDto> createProperty(User user, PropertyRequestDto propertyRequestDto) throws Exception {
+        boolean isPropertyAlreadyExist = this.propertyRepository.existsByTitleIgnoreCase(propertyRequestDto.getTitle());
         if (Boolean.FALSE.equals(isPropertyAlreadyExist)) {
             Property property = new Property();
             property.setId(UUID.randomUUID());
-            property.setTitle(createPropertyRequestDto.getTitle());
-            property.setDescription(createPropertyRequestDto.getDescription());
-            property.setLocation(createPropertyRequestDto.getLocation());
+            property.setTitle(propertyRequestDto.getTitle());
+            property.setDescription(propertyRequestDto.getDescription());
+            property.setLocation(propertyRequestDto.getLocation());
             property.setHostId(user);
-            property.setPricePerNight(createPropertyRequestDto.getPricePerNight());
+            property.setPricePerNight(propertyRequestDto.getPricePerNight());
 
             this.propertyRepository.save(property);
             return OutputSchemaDataResponseDto.<PropertyResponseDto>builder()

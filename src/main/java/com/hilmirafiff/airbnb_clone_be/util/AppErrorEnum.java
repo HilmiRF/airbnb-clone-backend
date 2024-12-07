@@ -10,6 +10,7 @@ public enum AppErrorEnum {
     OK("ABN-200", "Berhasil", "Successful"),
     CREATED("ABN-200", "Dibuat", "Created"),
     UPDATED("ABN-200", "Diperbarui", "Updated"),
+    DELETED("ABN-200", "Dihapus", "Deleted"),
     CLOSED("ABN-200", "Ditutup", "Closed"),
     FETCHED("ABN-200", "Diambil", "Fetched"),
     INACTIVE("ABN-200", "Dinonaktifkan", "Set to inactive"),
