@@ -1,8 +1,10 @@
 package com.hilmirafiff.airbnb_clone_be.service.impl;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hilmirafiff.airbnb_clone_be.dto.OutputSchemaDataResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.booking.BookingRequestDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.booking.BookingResponseDto;
+import com.hilmirafiff.airbnb_clone_be.dto.response.property.PropertyResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.Booking;
 import com.hilmirafiff.airbnb_clone_be.entity.Property;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
@@ -15,9 +17,13 @@ import com.hilmirafiff.airbnb_clone_be.util.AppConstant;
 import com.hilmirafiff.airbnb_clone_be.util.AppErrorEnum;
 import com.hilmirafiff.airbnb_clone_be.util.AppMessageEnum;
 import com.hilmirafiff.airbnb_clone_be.util.OutputSchemaResponseDto;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,9 +82,24 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    @Override
     public OutputSchemaDataResponseDto<BookingResponseDto> updateBookingById(UUID bookingId, BookingRequestDto bookingRequestDto) throws Exception {
-        return null;
+        Booking booking = this.bookingRepository.findById(bookingId).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "booking", null));
+        Property property = this.propertyRepository.findById(UUID.fromString(bookingRequestDto.getProperty())).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "property", null));
+        try{
+            booking.setProperty(property);
+            booking.setStartDate(bookingRequestDto.getStartDate());
+            booking.setEndDate(bookingRequestDto.getEndDate());
+            booking.setTotalPrice(bookingRequestDto.getTotalPrice());
+            this.bookingRepository.save(booking);
+
+            return OutputSchemaDataResponseDto.<BookingResponseDto>builder()
+                    .status(AppConstant.Status.SUCCESS)
+                    .reason(AppMessageEnum.PROPERTY.getMessageEn() + " " + AppErrorEnum.UPDATED.getAppErrorMessageEn())
+                    .data(mapToBookingResponseDto(booking))
+                    .build();
+        } catch (Exception ex){
+            throw new ApplicationWithParamException(AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.PROPERTY.getMessageEn(), null);
+        }
     }
 
     @Override
