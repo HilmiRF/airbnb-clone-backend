@@ -65,7 +65,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public OutputSchemaDataResponseDto<List<BookingResponseDto>> getAllBookingsForUser(User user) throws Exception {
-        return null;
+        List<Booking> bookings = this.bookingRepository.findByUserId(user.getUserId());
+        return OutputSchemaDataResponseDto.<List<BookingResponseDto>>builder()
+                .status(AppConstant.Status.SUCCESS)
+                .reason(AppMessageEnum.BOOKING.getMessageEn() + " " + AppErrorEnum.FETCHED.getAppErrorMessageEn())
+                .data(bookings.stream()
+                        .map(this::mapToBookingResponseDto)
+                        .toList())
+                .build();
     }
 
     @Override
