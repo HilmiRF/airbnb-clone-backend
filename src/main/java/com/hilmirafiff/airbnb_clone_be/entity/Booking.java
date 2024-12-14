@@ -22,8 +22,8 @@ import java.util.UUID;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Booking {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    private UUID id;
 
     @JsonBackReference("property-booking")
     @ManyToOne(fetch = FetchType.LAZY)

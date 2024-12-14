@@ -5,6 +5,7 @@ import com.hilmirafiff.airbnb_clone_be.dto.request.property.PropertyRequestDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.property.PropertyResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.Property;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
+import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import com.hilmirafiff.airbnb_clone_be.exception.ApplicationWithParamException;
 import com.hilmirafiff.airbnb_clone_be.repository.PropertyRepository;
 import com.hilmirafiff.airbnb_clone_be.service.PropertyService;
@@ -15,7 +16,6 @@ import com.hilmirafiff.airbnb_clone_be.util.OutputSchemaResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,7 +67,7 @@ public class PropertyServiceImpl implements PropertyService {
 
             return OutputSchemaDataResponseDto.<PropertyResponseDto>builder()
                     .status(AppConstant.Status.SUCCESS)
-                    .reason(AppMessageEnum.PROPERTY.getMessageEn() + AppErrorEnum.UPDATED.getAppErrorMessageEn())
+                    .reason(AppMessageEnum.PROPERTY.getMessageEn() + " " + AppErrorEnum.UPDATED.getAppErrorMessageEn())
                     .data(mapToPropertyResponseDto(property))
                     .build();
         } catch (Exception ex){
@@ -86,7 +86,7 @@ public class PropertyServiceImpl implements PropertyService {
                     .reason(AppMessageEnum.PROPERTY.getMessageEn()+" "+AppErrorEnum.DELETED)
                     .build();
         } catch (Exception ex){
-            throw new ApplicationWithParamException(AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.PROPERTY.getMessageEn(), null);
+            throw new ApplicationException(AppErrorEnum.INTERNAL_SERVER_ERROR);
         }
     }
 

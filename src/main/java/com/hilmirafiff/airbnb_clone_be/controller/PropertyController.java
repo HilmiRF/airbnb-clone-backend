@@ -45,7 +45,6 @@ public class PropertyController {
     @Operation(summary = "Create a property")
     @PostMapping
     public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>>>createProperty(@RequestHeader HttpHeaders requestHeaders, @Valid @RequestBody PropertyRequestDto propertyRequestDto) throws Exception {
-        log.info("MASUK SINI");
         String token = Objects.requireNonNull(requestHeaders.getFirst(HttpHeaders.AUTHORIZATION)).split(" ")[1];
         User user = this.authService.getUserFromToken(token);
         GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> response = messageUtils.successDto(propertyService.createProperty(user, propertyRequestDto), AppErrorEnum.CREATED);

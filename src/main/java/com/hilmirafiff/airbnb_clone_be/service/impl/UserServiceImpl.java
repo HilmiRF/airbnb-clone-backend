@@ -24,13 +24,11 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    public UserServiceImpl(UserRepository userRepository, JwtTokenProvider jwtTokenProvider
+    public UserServiceImpl(UserRepository userRepository
     ) {
         super();
         this.userRepository = userRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override

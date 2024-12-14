@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -19,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Review {
     @Id
     @GeneratedValue
-    private Long id;
+    private UUID id;
 
     @JsonBackReference("property-review")
     @ManyToOne(fetch = FetchType.LAZY)
