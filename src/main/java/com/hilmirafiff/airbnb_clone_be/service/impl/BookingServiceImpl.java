@@ -6,6 +6,7 @@ import com.hilmirafiff.airbnb_clone_be.dto.response.booking.BookingResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.Booking;
 import com.hilmirafiff.airbnb_clone_be.entity.Property;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
+import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import com.hilmirafiff.airbnb_clone_be.exception.ApplicationWithParamException;
 import com.hilmirafiff.airbnb_clone_be.repository.BookingRepository;
 import com.hilmirafiff.airbnb_clone_be.repository.PropertyRepository;
@@ -36,7 +37,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public OutputSchemaDataResponseDto<BookingResponseDto> createBooking(User user, BookingRequestDto bookingRequestDto) throws Exception {
         Property property = this.propertyRepository.findById(UUID.fromString(bookingRequestDto.getProperty())).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "property", null));
-//        boolean isBookingAlreadyExist = this.bookingRepository.existsBypropertyAndUserId(property.getId(), user.getUserId());
         if (property != null) {
             Booking booking = new Booking();
             booking.setId(UUID.randomUUID());
@@ -64,7 +64,16 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public OutputSchemaDataResponseDto<BookingResponseDto> getBookingById(UUID bookingId) throws Exception {
-        return null;
+        try{
+            Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "booking", null));
+            return OutputSchemaDataResponseDto.<BookingResponseDto>builder()
+                    .status(AppConstant.Status.SUCCESS)
+                    .reason(AppMessageEnum.BOOKING.getMessageEn() + " " + AppErrorEnum.FETCHED.getAppErrorMessageEn())
+                    .data(mapToBookingResponseDto(booking))
+                    .build();
+        } catch (Exception ex){
+            throw new ApplicationException(AppErrorEnum.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
