@@ -83,7 +83,16 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public OutputSchemaResponseDto deleteBookingById(UUID bookingId) throws Exception {
-        return null;
+        try{
+            Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "booking", null));
+            bookingRepository.delete(booking);
+            return OutputSchemaResponseDto.builder()
+                    .status(AppConstant.Status.SUCCESS)
+                    .reason(AppMessageEnum.BOOKING.getMessageEn() + " " + AppErrorEnum.DELETED)
+                    .build();
+        } catch (Exception ex){
+            throw new ApplicationException(AppErrorEnum.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private BookingResponseDto mapToBookingResponseDto(Booking booking){
