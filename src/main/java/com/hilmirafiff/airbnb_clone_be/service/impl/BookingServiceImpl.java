@@ -1,10 +1,8 @@
 package com.hilmirafiff.airbnb_clone_be.service.impl;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hilmirafiff.airbnb_clone_be.dto.OutputSchemaDataResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.booking.BookingRequestDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.booking.BookingResponseDto;
-import com.hilmirafiff.airbnb_clone_be.dto.response.property.PropertyResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.Booking;
 import com.hilmirafiff.airbnb_clone_be.entity.Property;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
@@ -17,13 +15,9 @@ import com.hilmirafiff.airbnb_clone_be.util.AppConstant;
 import com.hilmirafiff.airbnb_clone_be.util.AppErrorEnum;
 import com.hilmirafiff.airbnb_clone_be.util.AppMessageEnum;
 import com.hilmirafiff.airbnb_clone_be.util.OutputSchemaResponseDto;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 

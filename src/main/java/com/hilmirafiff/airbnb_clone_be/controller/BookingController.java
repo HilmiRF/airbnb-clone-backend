@@ -4,12 +4,10 @@ import com.hilmirafiff.airbnb_clone_be.dto.GlobalResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.OutputSchemaDataResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.booking.BookingRequestDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.booking.BookingResponseDto;
-import com.hilmirafiff.airbnb_clone_be.entity.Property;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
 import com.hilmirafiff.airbnb_clone_be.repository.PropertyRepository;
 import com.hilmirafiff.airbnb_clone_be.service.AuthService;
 import com.hilmirafiff.airbnb_clone_be.service.BookingService;
-import com.hilmirafiff.airbnb_clone_be.service.PropertyService;
 import com.hilmirafiff.airbnb_clone_be.util.AppErrorEnum;
 import com.hilmirafiff.airbnb_clone_be.util.AppMessageEnum;
 import com.hilmirafiff.airbnb_clone_be.util.MessageUtils;
@@ -36,7 +34,7 @@ public class BookingController {
     private final MessageUtils messageUtils;
     private final AuthService authService;
 
-    public BookingController(BookingService bookingService, MessageUtils messageUtils, AuthService authService, PropertyRepository propertyRepository) {
+    public BookingController(BookingService bookingService, MessageUtils messageUtils, AuthService authService) {
         this.bookingService = bookingService;
         this.messageUtils = messageUtils;
         this.authService = authService;

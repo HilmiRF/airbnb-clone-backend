@@ -10,7 +10,8 @@ public enum AppMessageEnum {
     USER("Pengguna", "User"),
     USER_LEVEL("User level", "User level"),
     PROPERTY("Properti", "Property"),
-    BOOKING("Pemesanan", "Booking");
+    BOOKING("Pemesanan", "Booking"),
+    REVIEW("Tinjauan","Review");
 
     private final String messageInd;
     private final String messageEn;
