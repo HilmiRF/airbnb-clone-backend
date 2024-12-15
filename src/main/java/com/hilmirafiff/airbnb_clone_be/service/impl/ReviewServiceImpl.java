@@ -2,7 +2,6 @@ package com.hilmirafiff.airbnb_clone_be.service.impl;
 
 import com.hilmirafiff.airbnb_clone_be.dto.OutputSchemaDataResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.request.review.ReviewRequestDto;
-import com.hilmirafiff.airbnb_clone_be.dto.response.booking.BookingResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.review.ReviewResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.Property;
 import com.hilmirafiff.airbnb_clone_be.entity.Review;
@@ -58,7 +57,14 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public OutputSchemaDataResponseDto<List<ReviewResponseDto>> getAllReview(UUID propertyId) throws Exception {
-        return null;
+        List<Review> reviews = this.reviewRepository.findByPropertyId(propertyId);
+        return OutputSchemaDataResponseDto.<List<ReviewResponseDto>>builder()
+                .status(AppConstant.Status.SUCCESS)
+                .reason(AppMessageEnum.REVIEW.getMessageEn() + " " + AppErrorEnum.FETCHED.getAppErrorMessageEn())
+                .data(reviews.stream()
+                        .map(this::mapToReviewResponseDto)
+                        .toList())
+                .build();
     }
 
     public ReviewResponseDto mapToReviewResponseDto(Review review){
