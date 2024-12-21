@@ -1,6 +1,7 @@
 package com.hilmirafiff.airbnb_clone_be.service.impl;
 
 import com.hilmirafiff.airbnb_clone_be.dto.OutputSchemaDataResponseDto;
+import com.hilmirafiff.airbnb_clone_be.dto.response.booking.BookingResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.image.ImageResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.Image;
 import com.hilmirafiff.airbnb_clone_be.entity.Property;
@@ -22,6 +23,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -70,6 +72,22 @@ public class ImageServiceImpl implements ImageService {
                     .status(AppConstant.Status.SUCCESS)
                     .reason(AppMessageEnum.IMAGE.getMessageEn() + " " + AppErrorEnum.CREATED.getAppErrorMessageEn())
                     .data(mapToImageResponseDto(image))
+                    .build();
+        } catch (Exception e){
+            throw new ApplicationException(AppErrorEnum.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public OutputSchemaDataResponseDto<List<ImageResponseDto>> getPropertyImage(Property property) throws Exception {
+        try{
+            List<Image> images = this.imageRepository.findByPropertyId(property.getId());
+            return OutputSchemaDataResponseDto.<List<ImageResponseDto>>builder()
+                    .status(AppConstant.Status.SUCCESS)
+                    .reason(AppMessageEnum.IMAGE.getMessageEn() + " " + AppErrorEnum.FETCHED.getAppErrorMessageEn())
+                    .data(images.stream()
+                            .map(this::mapToImageResponseDto)
+                            .toList())
                     .build();
         } catch (Exception e){
             throw new ApplicationException(AppErrorEnum.INTERNAL_SERVER_ERROR);

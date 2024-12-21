@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -46,11 +47,19 @@ public class ImageController {
 
     @Operation(summary = "Upload property images")
     @PostMapping
-    public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<ImageResponseDto>>> uploadUserImage(@RequestHeader HttpHeaders requestHeaders, @RequestParam("file") MultipartFile file, @RequestParam(value = "property_id", required = false) String propertyId) throws Exception {
+    public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<ImageResponseDto>>> uploadPropertyImage(@RequestHeader HttpHeaders requestHeaders, @RequestParam("file") MultipartFile file, @RequestParam(value = "property_id", required = false) String propertyId) throws Exception {
         String token = Objects.requireNonNull(requestHeaders.getFirst(HttpHeaders.AUTHORIZATION)).split(" ")[1];
         User user = this.authService.getUserFromToken(token);
-        Property property = this.propertyRepository.findById(UUID.fromString(propertyId)).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "property", null));;
+        Property property = this.propertyRepository.findById(UUID.fromString(propertyId)).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "property", null));
         GlobalResponseDto<OutputSchemaDataResponseDto<ImageResponseDto>> response = messageUtils.successDto(imageService.uploadImages(user, file, property), AppErrorEnum.CREATED);
         return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Get property images")
+    @GetMapping
+    public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<List<ImageResponseDto>>>> fetchPropertyImage(@RequestHeader HttpHeaders requestHeader, @RequestParam(value = "property_id", required = false) String propertyId) throws Exception {
+        Property property = this.propertyRepository.findById(UUID.fromString(propertyId)).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "property", null));
+        GlobalResponseDto<OutputSchemaDataResponseDto<List<ImageResponseDto>>> response = messageUtils.successDto(imageService.getPropertyImage(property), AppErrorEnum.FETCHED);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
