@@ -6,6 +6,10 @@ key:
     backend:
     front:
 
+supabase:
+  url:
+  apikey:
+
 app:
   jwt-secret:
   jwt-expiration-milliseconds:

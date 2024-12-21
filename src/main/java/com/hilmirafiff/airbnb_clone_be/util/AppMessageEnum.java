@@ -11,6 +11,7 @@ public enum AppMessageEnum {
     USER_LEVEL("User level", "User level"),
     PROPERTY("Properti", "Property"),
     BOOKING("Pemesanan", "Booking"),
+    IMAGE("Gambar","Images"),
     REVIEW("Tinjauan","Review");
 
     private final String messageInd;
