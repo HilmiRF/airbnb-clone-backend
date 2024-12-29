@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -44,10 +45,10 @@ public class PropertyController {
     // Create new property
     @Operation(summary = "Create a property")
     @PostMapping
-    public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>>>createProperty(@RequestHeader HttpHeaders requestHeaders, @Valid @RequestBody PropertyRequestDto propertyRequestDto) throws Exception {
+    public ResponseEntity<GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>>>createProperty(@RequestHeader HttpHeaders requestHeaders, @RequestPart("file") MultipartFile file, @RequestPart PropertyRequestDto propertyRequestDto) throws Exception {
         String token = Objects.requireNonNull(requestHeaders.getFirst(HttpHeaders.AUTHORIZATION)).split(" ")[1];
         User user = this.authService.getUserFromToken(token);
-        GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> response = messageUtils.successDto(propertyService.createProperty(user, propertyRequestDto), AppErrorEnum.CREATED);
+        GlobalResponseDto<OutputSchemaDataResponseDto<PropertyResponseDto>> response = messageUtils.successDto(propertyService.createProperty(user, file, propertyRequestDto), AppErrorEnum.CREATED);
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 

@@ -16,12 +16,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignUpResponseDto {
-    private UUID userId;
+    private String userId;
     private String email;
     private String username;
-    private UUID createdBy;
-    private LocalDateTime createdAt;
-    private UUID updatedBy;
-    private LocalDateTime updatedAt;
+    private String userLevelId;
 }
 

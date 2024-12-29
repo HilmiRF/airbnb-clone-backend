@@ -14,8 +14,14 @@ import com.hilmirafiff.airbnb_clone_be.util.AppErrorEnum;
 import com.hilmirafiff.airbnb_clone_be.util.AppMessageEnum;
 import com.hilmirafiff.airbnb_clone_be.util.OutputSchemaResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +29,10 @@ import java.util.UUID;
 @Service
 public class PropertyServiceImpl implements PropertyService {
     private final PropertyRepository propertyRepository;
+    @Value("${supabase.url}")
+    private String supabaseUrl;
+    @Value("${supabase.apikey}")
+    private String supabaseApiKey;
 
     public PropertyServiceImpl(PropertyRepository propertyRepository){
         this.propertyRepository = propertyRepository;
@@ -91,9 +101,28 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public OutputSchemaDataResponseDto<PropertyResponseDto> createProperty(User user, PropertyRequestDto propertyRequestDto) throws Exception {
+    public OutputSchemaDataResponseDto<PropertyResponseDto> createProperty(User user, MultipartFile file, PropertyRequestDto propertyRequestDto) throws Exception {
         boolean isPropertyAlreadyExist = this.propertyRepository.existsByTitleIgnoreCase(propertyRequestDto.getTitle());
+        String bucketName = "images";
+        String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+        String fileUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
         if (Boolean.FALSE.equals(isPropertyAlreadyExist)) {
+
+            // Upload file to Supabase
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(fileUrl))
+                    .header("Authorization", "Bearer " + supabaseApiKey)
+                    .header("Content-Type", file.getContentType())
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(file.getBytes()))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200 && response.statusCode() != 201) {
+                throw new ApplicationException(AppErrorEnum.INTERNAL_SERVER_ERROR);
+            }
+
             Property property = new Property();
             property.setId(UUID.randomUUID());
             property.setTitle(propertyRequestDto.getTitle());
@@ -101,6 +130,7 @@ public class PropertyServiceImpl implements PropertyService {
             property.setLocation(propertyRequestDto.getLocation());
             property.setHostId(user);
             property.setPricePerNight(propertyRequestDto.getPricePerNight());
+            property.setImageUrl(fileUrl);
 
             this.propertyRepository.save(property);
             return OutputSchemaDataResponseDto.<PropertyResponseDto>builder()
@@ -120,6 +150,7 @@ public class PropertyServiceImpl implements PropertyService {
                 .pricePerNight(property.getPricePerNight())
                 .location(property.getLocation())
                 .hostId(property.getHostId().getUserId().toString())
+                .imageUrl(property.getImageUrl())
                 .build();
     }
 }

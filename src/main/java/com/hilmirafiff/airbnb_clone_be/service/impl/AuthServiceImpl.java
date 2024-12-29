@@ -7,8 +7,10 @@ import com.hilmirafiff.airbnb_clone_be.dto.response.auth.LoginResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.auth.SignUpResponseDto;
 import com.hilmirafiff.airbnb_clone_be.dto.response.session.UserLoginResponseDto;
 import com.hilmirafiff.airbnb_clone_be.entity.User;
+import com.hilmirafiff.airbnb_clone_be.entity.UserLevel;
 import com.hilmirafiff.airbnb_clone_be.exception.ApplicationException;
 import com.hilmirafiff.airbnb_clone_be.exception.ApplicationWithParamException;
+import com.hilmirafiff.airbnb_clone_be.repository.UserLevelRepository;
 import com.hilmirafiff.airbnb_clone_be.repository.UserRepository;
 import com.hilmirafiff.airbnb_clone_be.security.JwtTokenProvider;
 import com.hilmirafiff.airbnb_clone_be.service.AuthService;
@@ -20,8 +22,10 @@ import org.springframework.stereotype.Service;
 
 
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -39,12 +43,14 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final UserLevelRepository userLevelRepository;
 
-    public AuthServiceImpl(UserServiceImpl userServiceImpl, JwtTokenProvider jwtTokenProvider, UserService userService, UserRepository userRepository){
+    public AuthServiceImpl(UserServiceImpl userServiceImpl, JwtTokenProvider jwtTokenProvider, UserService userService, UserRepository userRepository, UserLevelRepository userLevelRepository){
         this.userServiceImpl = userServiceImpl;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
         this.userRepository = userRepository;
+        this.userLevelRepository = userLevelRepository;
     }
 
     @Override
@@ -77,6 +83,7 @@ public class AuthServiceImpl implements AuthService {
     public OutputSchemaDataResponseDto<SignUpResponseDto> signUp(SignUpRequestDto signUpRequestDto) throws Exception {
         final String username = signUpRequestDto.getUsername();
         final User checkUser = userRepository.findByUsername(username);
+        final UserLevel userLevel = userLevelRepository.findById(UUID.fromString(signUpRequestDto.getUserLevelId())).orElseThrow(() -> new ApplicationWithParamException(AppErrorEnum.RESOURCE_NOT_FOUND, "user level", null));;
 
         if(checkUser != null){
             throw new ApplicationWithParamException(AppErrorEnum.ALREADY_EXISTS, AppMessageEnum.USER.getMessageEn(), null);
@@ -89,11 +96,19 @@ public class AuthServiceImpl implements AuthService {
         AES256.encrypt(strToEncrypt);
         String encryptedPass = AES256.getEncryptedString();
         signUpRequestDto.setPassword(encryptedPass);
-        User newUser = userServiceImpl.save(signUpRequestDto);
+        User user = new User();
+        user.setUserId(UUID.randomUUID());
+        user.setEmail(signUpRequestDto.getEmail());
+        user.setUsername(signUpRequestDto.getUsername());
+        user.setPassword(signUpRequestDto.getPassword());
+        user.setUserLevel(userLevel);
+        user.setCreatedAt(LocalDateTime.now());
+        userRepository.save(user);
+
         return OutputSchemaDataResponseDto.<SignUpResponseDto>builder()
                 .status(AppConstant.Status.SUCCESS)
                 .reason("Sign Up Success")
-                .data(new SignUpResponseDto(newUser.getUserId(), newUser.getEmail(), newUser.getUsername(), newUser.getCreatedBy(), newUser.getCreatedAt(), newUser.getUpdatedBy(), newUser.getUpdatedAt()))
+                .data(mapToSignUpResponseDto(user))
                 .build();
     }
 
@@ -117,6 +132,15 @@ public class AuthServiceImpl implements AuthService {
                 .expiresIn(expiresIn)
                 .tokenType("Bearer")
                 .user(user)
+                .build();
+    }
+
+    private SignUpResponseDto mapToSignUpResponseDto(User user) {
+        return SignUpResponseDto.builder()
+                .userId(String.valueOf(user.getUserId()))
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .userLevelId(String.valueOf(user.getUserLevel().getId()))
                 .build();
     }
 

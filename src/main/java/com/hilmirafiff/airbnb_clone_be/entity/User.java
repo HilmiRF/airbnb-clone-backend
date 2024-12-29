@@ -69,12 +69,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "userId", targetEntity = Review.class)
     private Set<Review> reviews = new LinkedHashSet<>();
 
-    @Builder.Default
-    @ToString.Exclude
-    @JsonManagedReference("user-image")
-    @OneToMany(mappedBy = "userId", targetEntity = Image.class)
-    private Set<Image> images = new LinkedHashSet<>();
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

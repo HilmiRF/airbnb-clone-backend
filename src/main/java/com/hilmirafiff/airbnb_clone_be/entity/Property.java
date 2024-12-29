@@ -28,6 +28,7 @@ public class Property {
     private String description;
     private Double pricePerNight;
     private String location;
+    private String imageUrl;
 
     @JsonBackReference("user-property")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,11 +40,5 @@ public class Property {
     @JsonManagedReference("property-review")
     @OneToMany(mappedBy = "propertyId", targetEntity = Review.class)
     private Set<Review> reviews = new LinkedHashSet<>();
-
-    @Builder.Default
-    @ToString.Exclude
-    @JsonManagedReference("user-property")
-    @OneToMany(mappedBy = "propertyId", targetEntity = Image.class)
-    private Set<Image> images = new LinkedHashSet<>();
 
 }

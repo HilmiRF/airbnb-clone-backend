@@ -19,4 +19,5 @@ public class PropertyResponseDto {
     private Double pricePerNight;
     private String location;
     private String hostId;
+    private String imageUrl;
 }
